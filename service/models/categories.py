@@ -3,7 +3,7 @@ from django.db import models
 from core.utils import generate_slug
 
 
-__all__ = ["CategoryType", "Category"]
+__all__ = ["CategoryType", "Category", "CategoryFieldName"]
 
 
 class CategoryType(models.Model):

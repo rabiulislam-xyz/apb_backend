@@ -1,8 +1,16 @@
 from rest_framework import viewsets
+from django_filters import rest_framework as filters
 
-from service.models import Category, Service, CategoryType
-from service.serializers import CategoryListSerializer, CategoryDetailSerializer, ServiceSerializer, \
-    CategoryTypeSerializer
+from service.filters import ServiceFilter
+from service.models import Category, Service, CategoryType, Field, FieldName, Address
+from service.serializers import (
+    CategoryListSerializer,
+    CategoryDetailSerializer,
+    CategoryTypeSerializer,
+    FieldSerializer,
+    FieldNameSerializer,
+    AddressSerializer,
+    ServiceDetailSerializer)
 
 
 class CategoryTypeViewSet(viewsets.ModelViewSet):
@@ -22,6 +30,23 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
 
 class ServiceViewSet(viewsets.ModelViewSet):
+    serializer_class = ServiceDetailSerializer
     queryset = Service.objects.all()
-    serializer_class = ServiceSerializer
     lookup_field = 'slug'
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = ServiceFilter
+
+
+class FieldNameViewSet(viewsets.ModelViewSet):
+    queryset = FieldName.objects.all()
+    serializer_class = FieldNameSerializer
+
+
+class FieldViewSet(viewsets.ModelViewSet):
+    queryset = Field.objects.all()
+    serializer_class = FieldSerializer
+
+
+class AddressViewSet(viewsets.ModelViewSet):
+    queryset = Address.objects.all()
+    serializer_class = AddressSerializer

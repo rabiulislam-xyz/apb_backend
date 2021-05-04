@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'mptt',
     'cloudinary',
     'cloudinary_storage',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
@@ -148,8 +149,11 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
     ],
-    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema'
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 100
 }
+
 
 # Heroku: Update database configuration from $DATABASE_URL.
 import dj_database_url
