@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/3.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
+import environ
 import os
 
 import cloudinary
@@ -19,16 +20,19 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+env = environ.Env()
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '&4nq=u-$)w4romp79dpk+ls(d^iobqx-=_ga0ft$i=)@h+q15-'
+SECRET_KEY = env.str('SECRET_KEY', 'superSecrete')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.bool('DEBUG', False)
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["*"]   # TODO specify allowed hosts
 
 AUTH_USER_MODEL = 'core.User'
 
@@ -136,9 +140,9 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Cloudinary stuff
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': 'rab',
-    'API_KEY': '522537126351755',
-    'API_SECRET': 'WmUYpF7fqFiD1xQbqZ4YE9M2vMI',
+    'CLOUD_NAME': env.str('CLOUDINARY_CLOUD_NAME', ''),
+    'API_KEY': env.str('CLOUDINARY_API_KEY', ''),
+    'API_SECRET': env.str('CLOUDINARY_API_SECRET', ''),
 }
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
