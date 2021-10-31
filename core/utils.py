@@ -1,11 +1,12 @@
 import re
 
 from django.core.validators import RegexValidator
+from django.db.models import Model
 from django.utils.crypto import get_random_string
 from django.utils.translation import ugettext_lazy as _
 
 
-def generate_slug(instance, value):
+def generate_slug(instance: Model, value: str) -> str:
     slug = re.sub(r'[-\s]+', '-', value.lower()).strip()
 
     model = instance.__class__
