@@ -34,7 +34,7 @@ SECRET_KEY = env.str('SECRET_KEY', 'superSecrete')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool('DEBUG', False)
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']   # TODO specify allowed hosts
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', 'apb-backend.herokuapp.com']
 
 AUTH_USER_MODEL = 'core.User'
 
