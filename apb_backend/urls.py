@@ -21,7 +21,7 @@ from rest_framework.documentation import include_docs_urls
 from rest_framework.permissions import AllowAny
 
 from apb_backend.views import ping
-from core.views import GoogleLogin
+from core.views import GoogleLogin, FacebookLogin
 
 api_v1_urls = [
     path('users/', include('core.urls')),
@@ -32,6 +32,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth/', include('dj_rest_auth.urls')),
     path('social-login/google/', GoogleLogin.as_view(), name='google_login'),
+    path('social-login/facebook/', FacebookLogin.as_view(), name='facebook_login'),
     # path('drf-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('api/v1/', include(api_v1_urls)),
     path('api/v1/docs/', include_docs_urls(
