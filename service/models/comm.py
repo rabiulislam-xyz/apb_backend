@@ -2,7 +2,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 
-__all__ = ["Image", "AttributeTypeChoice", "Field", "FieldName"]
+__all__ = ["Image", "AttributeTypeChoice", "FieldName", "CategoryFieldName", "FieldValue"]
 
 
 class Image(models.Model):
@@ -42,7 +42,24 @@ class FieldName(models.Model):
         return self.name
 
 
-class Field(models.Model):
+class CategoryFieldName(models.Model):
+    """
+    Through table for store is_required value
+    """
+    category = models.ForeignKey(
+        'service.Category',
+        related_name='+',
+        on_delete=models.CASCADE)
+
+    field_name = models.ForeignKey(
+        'service.FieldName',
+        related_name='+',
+        on_delete=models.CASCADE)
+
+    is_required = models.BooleanField(default=True)
+
+
+class FieldValue(models.Model):
     name = models.ForeignKey(
         'service.FieldName',
         related_name='+',

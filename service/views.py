@@ -2,15 +2,17 @@ from rest_framework import viewsets
 from django_filters import rest_framework as filters
 
 from service.filters import ServiceFilter
-from service.models import Category, Service, CategoryType, Field, FieldName, Address
+from service.models import Category, Service, CategoryType, FieldValue, FieldName, Area
 from service.serializers import (
     CategoryListSerializer,
     CategoryDetailSerializer,
     CategoryTypeSerializer,
-    FieldSerializer,
+    FieldValueSerializer,
     FieldNameSerializer,
-    AddressSerializer,
-    ServiceDetailSerializer)
+    AreaSerializer,
+    ServiceDetailSerializer,
+    ServiceCreateSerializer,
+)
 
 
 class CategoryTypeViewSet(viewsets.ModelViewSet):
@@ -30,7 +32,12 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
 
 class ServiceViewSet(viewsets.ModelViewSet):
-    serializer_class = ServiceDetailSerializer
+    def get_serializer_class(self):
+        if self.action == 'create':
+            # return ServiceDetailSerializer
+            return ServiceCreateSerializer
+        return ServiceDetailSerializer
+
     queryset = Service.objects.all()
     lookup_field = 'slug'
     filter_backends = (filters.DjangoFilterBackend,)
@@ -42,11 +49,11 @@ class FieldNameViewSet(viewsets.ModelViewSet):
     serializer_class = FieldNameSerializer
 
 
-class FieldViewSet(viewsets.ModelViewSet):
-    queryset = Field.objects.all()
-    serializer_class = FieldSerializer
+class FieldValueViewSet(viewsets.ModelViewSet):
+    queryset = FieldValue.objects.all()
+    serializer_class = FieldValueSerializer
 
 
-class AddressViewSet(viewsets.ModelViewSet):
-    queryset = Address.objects.all()
-    serializer_class = AddressSerializer
+class AreaViewSet(viewsets.ModelViewSet):
+    queryset = Area.objects.all()
+    serializer_class = AreaSerializer

@@ -30,18 +30,23 @@ class Service(models.Model):
         related_name='services',
         on_delete=models.PROTECT)
 
-    address = models.ForeignKey(
-        'service.Address',
+    area = models.ForeignKey(
+        'service.Area',
         on_delete=models.PROTECT,
         related_name='services')
+
+    address = models.TextField(
+        null=True,
+        blank=True,
+        max_length=500)
 
     images = models.ManyToManyField(
         'service.Image',
         related_name="+",
         blank=True)
 
-    fields = models.ManyToManyField(
-        to='service.Field',
+    field_values = models.ManyToManyField(
+        to='service.FieldValue',
         related_name='+',
         blank=True)
 
@@ -68,6 +73,18 @@ class Service(models.Model):
         on_delete=models.PROTECT,
         null=True,
         blank=True)
+
+    sorting_id = models.PositiveIntegerField(
+        null=True, 
+        blank=True, 
+        unique=True, 
+        help_text='Value for ordering/sorting list, lower is high priority')
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ('sorting_id', 'name')
 
     def __str__(self):
         return self.name

@@ -4,7 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 from core.utils import generate_slug
 
 
-__all__ = ["CityCorporationChoice", "Address"]
+__all__ = ["CityCorporationChoice", "Area"]
 
 
 class CityCorporationChoice(models.TextChoices):
@@ -22,11 +22,15 @@ class CityCorporationChoice(models.TextChoices):
     SYLHET = 'SYLHET', _('Sylhet')
 
 
-class Address(models.Model):
-    area = models.CharField(max_length=255)
-    word = models.PositiveSmallIntegerField()
+class Area(models.Model):
+    name = models.CharField(max_length=255)
+    word = models.PositiveSmallIntegerField(
+        null=True,
+        blank=True)
 
     city_corporation = models.CharField(
+        null=True,
+        blank=True,
         max_length=60,
         choices=CityCorporationChoice.choices)
 
@@ -40,12 +44,13 @@ class Address(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f'{self.area} word: {self.word} {self.city_corporation} City Corporation'
+        return f'{self.name} word: {self.word or "all,"} {self.city_corporation or "all"} City Corporation'
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = generate_slug(self, self.city_corporation)
+            self.slug = generate_slug(self, self.name)
         super().save(*args, **kwargs)
 
     class Meta:
-        unique_together = (('word', 'city_corporation'), )
+        # unique_together = (('word', 'city_corporation'), )
+        ordering = ('word', )

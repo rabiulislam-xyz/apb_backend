@@ -8,6 +8,6 @@ class ServiceFilter(filters.FilterSet):
         model = Service
         fields = [
             'category__slug',
-            'address__word',
-            'address__city_corporation'
+            'area__word',
+            'area__city_corporation'
         ]

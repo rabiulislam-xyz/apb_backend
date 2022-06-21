@@ -3,7 +3,7 @@ from django.db import models
 from core.utils import generate_slug
 
 
-__all__ = ["CategoryType", "Category", "CategoryFieldName"]
+__all__ = ["CategoryType", "Category"]
 
 
 class CategoryType(models.Model):
@@ -27,6 +27,12 @@ class CategoryType(models.Model):
         on_delete=models.PROTECT,
         related_name='+')
 
+    sorting_id = models.PositiveIntegerField(
+        null=True, 
+        blank=True, 
+        unique=True, 
+        help_text='Value for ordering/sorting list, lower is high priority')
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -35,28 +41,12 @@ class CategoryType(models.Model):
 
     class Meta:
         verbose_name_plural = 'Category Types'
+        ordering = ('sorting_id', 'name')
 
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = generate_slug(self, self.name)
         super().save(*args, **kwargs)
-
-
-class CategoryFieldName(models.Model):
-    """
-    Through table for store is_required value
-    """
-    category = models.ForeignKey(
-        'service.Category',
-        related_name='+',
-        on_delete=models.CASCADE)
-
-    field_name = models.ForeignKey(
-        'service.FieldName',
-        related_name='+',
-        on_delete=models.CASCADE)
-
-    is_required = models.BooleanField(default=True)
 
 
 class Category(models.Model):
@@ -73,6 +63,11 @@ class Category(models.Model):
         on_delete=models.PROTECT,
         related_name='categories')
 
+    icon = models.ImageField(
+        upload_to='icons/',
+        null=True,
+        blank=True)
+
     banner = models.ForeignKey(
         "service.Image",
         null=True,
@@ -80,12 +75,17 @@ class Category(models.Model):
         on_delete=models.PROTECT,
         related_name='+')
 
-    fields = models.ManyToManyField(
+    field_names = models.ManyToManyField(
         to='service.FieldName',
         through='service.CategoryFieldName',
         related_name='+',
         blank=True)
 
+    sorting_id = models.PositiveIntegerField(
+        null=True, 
+        blank=True, 
+        unique=True, 
+        help_text='Value for ordering/sorting list, lower is high priority')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -94,6 +94,7 @@ class Category(models.Model):
 
     class Meta:
         verbose_name_plural = 'Categories'
+        ordering = ('sorting_id', 'name')
 
     def save(self, *args, **kwargs):
         if not self.slug:

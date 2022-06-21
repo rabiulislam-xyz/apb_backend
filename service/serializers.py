@@ -2,7 +2,7 @@ import logging
 
 from rest_framework import serializers
 
-from service.models import Category, Service, Image, CategoryType, Field, FieldName, Address
+from service.models import Category, Service, Image, CategoryType, FieldValue, FieldName, Area
 
 logger = logging.getLogger(__name__)
 
@@ -14,10 +14,10 @@ class ImageSerializer(serializers.ModelSerializer):
         read_only_fields = ('id',)
 
 
-class AddressSerializer(serializers.ModelSerializer):
+class AreaSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Address
-        fields = ('id', 'area', 'word', 'city_corporation')
+        model = Area
+        fields = ('id', 'name', 'word', 'city_corporation')
         read_only_fields = ('id', )
 
 
@@ -28,9 +28,9 @@ class FieldNameSerializer(serializers.ModelSerializer):
         read_only_fields = ('id',)
 
 
-class FieldSerializer(serializers.ModelSerializer):
+class FieldValueSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Field
+        model = FieldValue
         fields = ('id', 'name', 'value')
         read_only_fields = ('id',)
 
@@ -48,14 +48,14 @@ class CategoryListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Category
-        fields = ('name', 'slug', 'url')
+        fields = ('name', 'slug', 'url', 'icon')
         lookup_field = 'slug'
 
 
 class ServiceDetailSerializer(serializers.HyperlinkedModelSerializer):
     images = ImageSerializer(many=True, read_only=True)
-    address = AddressSerializer()
-    fields = FieldSerializer(many=True, read_only=True)
+    area = AreaSerializer()
+    field_values = FieldValueSerializer(many=True, read_only=True)
 
     class Meta:
         model = Service
@@ -84,7 +84,35 @@ class ServiceDetailSerializer(serializers.HyperlinkedModelSerializer):
 
         return representation
 
+
+class ServiceMiniSerializer(serializers.HyperlinkedModelSerializer):
+    images = ImageSerializer(many=True, read_only=True)
+    area = AreaSerializer()
+
+    class Meta:
+        model = Service
+        fields = (
+            'name', 'slug', 'description', 'phone_number',
+            'address', 'images', 'area'
+        )
+        lookup_field = 'slug'
+        extra_kwargs = {
+            'url': {'lookup_field': 'slug'},
+        }
+
+
+class ServiceCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Service
+        fields = '__all__'
+        read_only_fields = (
+            'created_by', 'created_at',
+            'updated_by', 'updated_at'
+        )
+        lookup_field = 'slug'
+
     def create(self, validated_data):
+        validated_data['created_by'] = self.context['request'].user
         validated_data['updated_by'] = self.context['request'].user
         return super().create(validated_data)
 
@@ -105,11 +133,12 @@ class CategoryTypeMiniSerializer(serializers.ModelSerializer):
 class CategoryDetailSerializer(serializers.ModelSerializer):
     banner = ImageSerializer(read_only=True)
     type = CategoryTypeMiniSerializer(read_only=True)
-    # services = ServiceSerializer(many=True, read_only=True)
+    fields = FieldNameSerializer(many=True, read_only=True)
+    services = ServiceMiniSerializer(many=True, read_only=True)
 
     class Meta:
         model = Category
-        fields = ('name', 'slug', 'banner', 'type')
+        fields = ('name', 'slug', 'banner', 'type', 'icon', 'fields', 'services')
         lookup_field = 'slug'
 
 

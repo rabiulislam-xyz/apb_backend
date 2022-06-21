@@ -3,19 +3,20 @@ from django.contrib import admin
 from service.models import (
     Service,
     Category,
-    CategoryFieldName,
     Image,
     CategoryType,
-    Address,
+    Area,
     FieldName,
-    Field)
+    CategoryFieldName,
+    FieldValue,
+)
 
 
 # Services
 
 @admin.register(Service)
 class ServiceAdmin(admin.ModelAdmin):
-    list_display = ('name', 'phone_number', 'address', 'category', 'is_reviewed')
+    list_display = ('name', 'phone_number', 'area', 'category', 'is_reviewed', 'sorting_id')
     search_fields = ('name', 'phone_number')
     list_filter = ('is_reviewed', )
 
@@ -24,12 +25,20 @@ class ServiceAdmin(admin.ModelAdmin):
 
 @admin.register(CategoryType)
 class CategoryTypeAdmin(admin.ModelAdmin):
-    list_display = ('name', 'slug')
+    list_display = ('name', 'slug', 'sorting_id')
+    search_fields = ('name', )
+
+
+class CategoryFieldNameInline(admin.TabularInline):
+    model = CategoryFieldName
+    extra = 0
 
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('name', 'slug', 'type')
+    list_display = ('name', 'slug', 'type', 'sorting_id')
+    search_fields = ('name', )
+    inlines = (CategoryFieldNameInline, )
 
 
 @admin.register(CategoryFieldName)
@@ -39,9 +48,9 @@ class CategoryFieldNameAdmin(admin.ModelAdmin):
 
 # locations
 
-@admin.register(Address)
-class AddressAdmin(admin.ModelAdmin):
-    list_display = ('area', 'word', 'city_corporation', 'slug')
+@admin.register(Area)
+class AreaAdmin(admin.ModelAdmin):
+    list_display = ('name', 'word', 'city_corporation', 'slug')
 
 
 # common
@@ -58,7 +67,7 @@ class FieldNameAdmin(admin.ModelAdmin):
     search_fields = ('name', )
 
 
-@admin.register(Field)
+@admin.register(FieldValue)
 class FieldAdmin(admin.ModelAdmin):
     list_display = ('name', 'value')
     search_fields = ('name', 'value')
